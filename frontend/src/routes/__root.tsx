@@ -3,7 +3,11 @@ import { TanStackRouterDevtools } from '@tanstack/router-devtools';
 import { Snowflakes } from '../components/Snowflakes';
 
 export const Route = createRootRoute({
-  component: () => (
+  component: RootComponent,
+});
+
+function RootComponent() {
+  return (
     <div className="min-h-screen">
       <Snowflakes />
       <header className="bg-christmas-red/80 backdrop-blur-sm border-b-4 border-christmas-gold shadow-lg">
@@ -16,21 +20,19 @@ export const Route = createRootRoute({
               </h1>
             </Link>
             <nav className="flex gap-4">
-              <Link
-                to="/"
-                className="christmas-button"
-                activeProps={{ className: 'ring-2 ring-christmas-gold' }}
-              >
+              <Link to="/" className="christmas-button" activeProps={{ className: 'ring-2 ring-christmas-gold' }}>
                 🏠 Home
               </Link>
             </nav>
           </div>
         </div>
       </header>
+
       <main className="container mx-auto px-4 py-8">
         <Outlet />
       </main>
+
       <TanStackRouterDevtools />
     </div>
-  ),
-});
+  );
+}

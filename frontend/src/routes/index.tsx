@@ -5,9 +5,10 @@ import { PersonCard } from '../components/PersonCard';
 import { AddPersonForm } from '../components/AddPersonForm';
 import type { CreatePersonInput } from '../types';
 
-export const Route = createFileRoute('/')({
+export const Route = createFileRoute("/")( {
   component: HomePage,
 });
+
 
 function HomePage() {
   const queryClient = useQueryClient();
@@ -41,31 +42,17 @@ function HomePage() {
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="text-4xl font-christmas text-christmas-gold">Loading... 🎅</div>
-      </div>
-    );
-  }
+  if (isLoading) return <div>Loading...</div>;
 
   return (
     <div className="space-y-8">
       <AddPersonForm onSubmit={handleAddPerson} />
 
-      {people.length === 0 ? (
-        <div className="christmas-card p-12 text-center">
-          <p className="text-2xl font-christmas text-christmas-gold">
-            No people added yet! Add someone to start planning gifts. 🎁
-          </p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {people.map((person) => (
-            <PersonCard key={person.id} person={person} onDelete={handleDeletePerson} />
-          ))}
-        </div>
-      )}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {people.map((person) => (
+          <PersonCard key={person.id} person={person} onDelete={handleDeletePerson} />
+        ))}
+      </div>
     </div>
   );
 }

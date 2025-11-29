@@ -1,6 +1,8 @@
 import type { Person, Gift, CreatePersonInput, CreateGiftInput, UpdateGiftInput } from '../types';
 
-const API_BASE = '/api';
+const API_BASE = "http://localhost:8000/api";
+
+
 
 // People API
 export const peopleApi = {
