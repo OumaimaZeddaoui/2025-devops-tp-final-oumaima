@@ -9,7 +9,7 @@ import (
 	"github.com/anthonyquere/christmas-gift-list/internal/handlers"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"github.com/go-chi/cors"
+	"github.com/go-chi/cors" // Assure-toi que cette librairie est bien importée
 )
 
 func main() {
@@ -34,14 +34,19 @@ func main() {
 	// Middleware
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
+	
+	// >>> DEBUT DE LA CORRECTION CORS <<<
+	// On remplace le "*" par l'adresse exacte du Frontend pour la sécurité et la compatibilité Render
 	r.Use(cors.Handler(cors.Options{
-		AllowedOrigins:   []string{"*"},
+		AllowedOrigins:   []string{"https://oumaima-frontend.onrender.com"}, 
 		AllowedMethods:   []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
 		ExposedHeaders:   []string{"Link"},
 		AllowCredentials: true,
 		MaxAge:           300,
 	}))
+	// >>> FIN DE LA CORRECTION CORS <<<
+
 
 	// Routes
 	r.Route("/api", func(r chi.Router) {
