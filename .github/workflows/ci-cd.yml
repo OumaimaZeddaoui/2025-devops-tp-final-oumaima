@@ -6,7 +6,9 @@ on:
       - main
 
 jobs:
-  build-and-deploy: # Renommé pour plus de clarté
+  build-and-deploy:
+    permissions: # <-- AJOUTER CE BLOC
+      contents: write # Permet la création de tag et de release
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
