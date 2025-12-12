@@ -2,6 +2,18 @@
 
 A full-stack web application for managing Christmas gift ideas with a festive theme. Keep track of people and their gift ideas, and select the perfect gift for everyone on your list!
 
+### ⚠️ DevOps vs. "Vibe-Code" : Les Corrections Nécessaires
+
+L'application prototype de Jho contenait des problèmes de configuration qui empêchaient le déploiement en production. Pour que l'application fonctionne, les modifications suivantes (essentielles à la stratégie DevOps) ont été appliquées :
+
+1.  **Correction CORS (Backend)** : Le Backend (Go) bloquait les requêtes provenant de l'URL Render du Frontend. L'adresse `https://oumaima-frontend.onrender.com` a été explicitement autorisée dans le fichier `backend/cmd/server/main.go`.
+2.  **Correction de l'URL Codée en Dur (Frontend)** : Le Frontend utilisait l'adresse de développement locale (`http://localhost:8000`) codée en dur dans `frontend/src/api.ts`.
+    * Ceci a été corrigé en remplaçant l'adresse locale par la variable d'environnement dynamique `import.meta.env.VITE_API_BASE_URL`.
+3.  **Correction du Dockerfile (Frontend)** : Le `Dockerfile` du Frontend ne transmettait pas la variable d'environnement au moment du build (`npm run build`), causant une URL vide.
+    * Le `Dockerfile` a été modifié pour injecter la variable `VITE_API_BASE_URL` au moment de la compilation.
+
+Ces ajustements étaient nécessaires pour respecter le principe de **Configuration par Environnement** propre à une stratégie DevOps.
+
 ## About
 
 This project is a demonstration of a modern full-stack application with:
@@ -88,6 +100,31 @@ For detailed setup instructions for each package, see:
    ```
 
    Frontend runs at http://localhost:5173
+
+   ## Déploiement en Production (CI/CD)
+
+Ce projet est déployé sur **Render.com** en utilisant une approche de **Continuous Deployment (CD)** via **GitHub Actions** pour lier toutes les composantes.
+
+### Architecture de Production
+
+L'application est déployée en trois services interconnectés sur Render :
+1.  **Base de Données (PostgreSQL)** : Service PostgreSQL managé.
+2.  **Backend API (`oumaima-backend`)** : Service Web Go (construit par Docker). Il est configuré pour autoriser les requêtes CORS provenant du Frontend et reçoit la variable `DATABASE_URL` pour la connexion à la base de données.
+3.  **Frontend SPA (`oumaima-frontend`)** : Service Web React/Vite (construit par Docker). Il reçoit la variable `VITE_API_BASE_URL` (`https://oumaima-backend.onrender.com`) pour communiquer avec l'API.
+
+### Pipeline CI/CD
+
+Chaque push sur la branche `main` déclenche un workflow **GitHub Actions** (`.github/workflows/ci-cd.yml`) qui effectue les étapes suivantes :
+* Authentification auprès de **Docker Hub** et de **Render**.
+* Construction et push de l'image Docker du **Backend**.
+* Construction et push de l'image Docker du **Frontend**.
+* Déclenchement automatique du déploiement des services `oumaima-backend` et `oumaima-frontend` sur Render.
+* *NOTE : L'étape de création de GitHub Release est ajoutée dans le pipeline.*
+
+### URL en Production
+
+L'application est accessible à l'adresse publique :
+👉 **[https://oumaima-frontend.onrender.com](https://oumaima-frontend.onrender.com)**
 
 ## Available Commands
 
@@ -250,7 +287,10 @@ Create a `.env` file in the `backend/` directory or set these environment variab
 
 ### Frontend
 
-The frontend uses Vite's proxy configuration to forward `/api` requests to the backend at `http://localhost:8080`. You can modify this in `frontend/vite.config.ts` if needed.
+Le Frontend utilise la variable d'environnement pour connaître l'adresse de l'API en production. Elle doit être injectée au moment du build (via le Dockerfile).
+
+- `VITE_API_BASE_URL` - L'URL complète du service Backend en production.
+  - Exemple: `https://oumaima-backend.onrender.com`
 
 ## Additional Documentation
 
